@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo Sistema de Entregas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .screen {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .screen-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .screen-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .screen-info strong {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.filled, select.filled, textarea.filled {
+            background-color: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .section-card {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.web {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge.mobile {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .automation-box {
+            background: #fef3c7;
+            border: 2px dashed #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .automation-box p {
+            color: #92400e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .status-list li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .status-list li:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.disponible {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .scanner-area {
+            border: 3px dashed #667eea;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            background: #f0f4ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scanner-area:hover {
+            background: #e0e7ff;
+            border-color: #4f46e5;
+        }
+
+        .scanner-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transition: width 0.5s;
+        }
+
+        .signature-pad {
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            background: white;
+            width: 100%;
+            height: 200px;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        .signature-pad canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .mobile-frame {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .mobile-screen {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .notification-preview {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .notification-preview h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .attachment-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .nav-indicator {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                margin: 10px;
+            }
+
+            .screen {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Gestión de Entregas</h1>
+            <p>Prototipo Navegable - Proceso de Recepción de Entregas Programadas</p>
+        </div>
+
+        <!-- Pantalla 1: Registrar orden de entrega -->
+        <div class="screen active" id="screen1">
+            <div class="screen-title">
+                <span class="icon">📋</span>
+                1. Registrar Orden de Entrega
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Coordinador de Logística</p>
+                <p><strong>Requisito:</strong> RF-02 - Mostrar formulario de registro</p>
+                <p><strong>Automatización:</strong> Formulario se llena automáticamente al hacer clic en los campos</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Llenar Automáticamente" para simular entrada de datos</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Orden Entrega</div>
+                
+                <div class="form-row">
+                    <label>Id:</label>
+                    <input type="text" id="orden_id" placeholder="Id">
+                </div>
+                
+                <div class="form-row">
+                    <label>Fecha:</label>
+                    <input type="text" id="orden_fecha" placeholder="Fecha">
+                </div>
+                
+                <div class="form-row">
+                    <label>Estado:</label>
+                    <input type="text" id="orden_estado" placeholder="Estado">
+                </div>
+                
+                <div class="form-row">
+                    <label>Tipo Servicio:</label>
+                    <input type="text" id="orden_tipo" placeholder="Tipo Servicio">
+                </div>
+                
+                <div class="form-row">
+                    <label>Dirección Entrega:</label>
+                    <input type="text" id="orden_direccion" placeholder="Dirección Entrega">
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Cliente</div>
+                
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="cliente_nombre" placeholder="Nombre">
+                </div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" id="cliente_cedula" placeholder="Cédula">
+                </div>
+                
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" id="cliente_telefono" placeholder="Teléfono">
+                </div>
+                
+                <div class="form-row">
+                    <label>Dirección:</label>
+                    <input type="text" id="cliente_direccion" placeholder="Dirección">
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Transportador</div>
+                
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="transp_nombre" placeholder="Nombre">
+                </div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" id="transp_cedula" placeholder="Cédula">
+                </div>
+                
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" id="transp_telefono" placeholder="Teléfono">
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Coordinador Logística</div>
+                
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="coord_nombre" placeholder="Nombre">
+                </div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" id="coord_cedula" placeholder="Cédula">
+                </div>
+                
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" id="coord_telefono" placeholder="Teléfono">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="autoFillForm1()">Llenar Automáticamente</button>
+                <button class="secondary" onclick="clearForm1()">Limpiar</button>
+                <button class="primary" onclick="showScreen(2)">Guardar y Continuar →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 1 de 10</div>
+        </div>
+
+        <!-- Pantalla 2: Confirmar disponibilidad -->
+        <div class="screen" id="screen2">
+            <div class="screen-title">
+                <span class="icon">✅</span>
+                2. Confirmar Disponibilidad
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Coordinador de Logística</p>
+                <p><strong>Requisito:</strong> RF-10 - Verificar disponibilidad en inventario</p>
+                <p><strong>Automatización:</strong> Sistema verifica inventario automáticamente y muestra estado en tiempo real</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Al hacer clic en una orden, el sistema verifica inventario automáticamente</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Órdenes Pendientes</div>
+                
+                <ul class="status-list">
+                    <li onclick="verificarDisponibilidad(1)">
+                        <span><strong>Orden #001</strong> - Cliente: María Gómez - Producto: Cajas 50 unidades</span>
+                        <span class="status-badge pendiente">Pendiente</span>
+                    </li>
+                    <li onclick="verificarDisponibilidad(2)">
+                        <span><strong>Orden #002</strong> - Cliente: Juan Pérez - Producto: Pallet 100 unidades</span>
+                        <span class="status-badge pendiente">Pendiente</span>
+                    </li>
+                    <li onclick="verificarDisponibilidad(3)">
+                        <span><strong>Orden #003</strong> - Cliente: Ana Torres - Producto: Contenedor 200 unidades</span>
+                        <span class="status-badge pendiente">Pendiente</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section-card" id="disponibilidad-result" style="display: none;">
+                <div class="section-title">✓ Verificación de Inventario</div>
+                <div class="form-row">
+                    <label>Estado de Inventario:</label>
+                    <input type="text" class="filled" value="✓ Disponible en Bodega A" readonly>
+                </div>
+                <div class="form-row">
+                    <label>Cantidad Disponible:</label>
+                    <input type="text" class="filled" value="150 unidades" readonly>
+                </div>
+                <div class="form-row">
+                    <label>Fecha Programada:</label>
+                    <input type="text" class="filled" value="2025-11-22 14:00" readonly>
+                </div>
+                <div class="form-row">
+                    <label>Nuevo Estado:</label>
+                    <input type="text" class="filled" value="Disponible para envío" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(1)">← Anterior</button>
+                <button class="primary" onclick="showScreen(3)">Confirmar y Continuar →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 2 de 10</div>
+        </div>
+
+        <!-- Pantalla 3: Recibir al transportador -->
+        <div class="screen" id="screen3">
+            <div class="screen-title">
+                <span class="icon">🚚</span>
+                3. Recibir al Transportador
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Supervisor de Patio</p>
+                <p><strong>Requisito:</strong> RF-18 - Verificar identificación del transportador</p>
+                <p><strong>Automatización:</strong> Lector de identificación valida cédula y carga datos automáticamente</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Escanear Identificación" para validar transportador</p>
+            </div>
+
+            <div class="section-card">
+                <div class="scanner-area" onclick="escanearID()">
+                    <div class="scanner-icon">🔍</div>
+                    <h3>Escanear Identificación del Transportador</h3>
+                    <p style="margin-top: 10px; color: #666;">Haz clic aquí para activar el lector</p>
+                </div>
+            </div>
+
+            <div class="section-card" id="transportador-data" style="display: none;">
+                <div class="section-title">✓ Transportador Verificado</div>
+                
+                <div class="form-row">
+                    <label>Nombre Completo:</label>
+                    <input type="text" class="filled" value="Carlos Martínez López" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" class="filled" value="1234567890" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Empresa:</label>
+                    <input type="text" class="filled" value="TransLog Express" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Número de Guía:</label>
+                    <input type="text" class="filled" value="GU-2025-001234" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Placa Vehículo:</label>
+                    <input type="text" class="filled" value="ABC-123" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Hora de Ingreso:</label>
+                    <input type="text" class="filled" value="14:23:45" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Área Asignada:</label>
+                    <input type="text" class="filled" value="Patio A - Zona 3" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(2)">← Anterior</button>
+                <button class="primary" onclick="showScreen(4)">Registrar Ingreso →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 3 de 10</div>
+        </div>
+
+        <!-- Pantalla 4: Verificar documentos de envío -->
+        <div class="screen" id="screen4">
+            <div class="screen-title">
+                <span class="icon">📄</span>
+                4. Verificar Documentos de Envío
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Supervisor de Patio</p>
+                <p><strong>Requisito:</strong> RF-26 - Escanear documentos de envío</p>
+                <p><strong>Automatización:</strong> Sistema escanea documentos y compara automáticamente con orden registrada</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Escanear Documentos" para validar automáticamente</p>
+            </div>
+
+            <div class="section-card">
+                <div class="scanner-area" onclick="escanearDocumentos()">
+                    <div class="scanner-icon">📑</div>
+                    <h3>Escanear Guía y Remisión de Envío</h3>
+                    <p style="margin-top: 10px; color: #666;">Coloque los documentos en el escáner</p>
+                </div>
+            </div>
+
+            <div class="section-card" id="documentos-verificados" style="display: none;">
+                <div class="section-title">✓ Documentos Verificados y Validados</div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Documento Escaneado</th>
+                                <th>Sistema</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Número de Guía</strong></td>
+                                <td>GU-2025-001234</td>
+                                <td>GU-2025-001234</td>
+                                <td><span class="status-badge disponible">✓ Coincide</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cliente</strong></td>
+                                <td>María Gómez</td>
+                                <td>María Gómez</td>
+                                <td><span class="status-badge disponible">✓ Coincide</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cantidad</strong></td>
+                                <td>50 unidades</td>
+                                <td>50 unidades</td>
+                                <td><span class="status-badge disponible">✓ Coincide</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Producto</strong></td>
+                                <td>Cajas Tipo A</td>
+                                <td>Cajas Tipo A</td>
+                                <td><span class="status-badge disponible">✓ Coincide</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Autenticidad Guía</strong></td>
+                                <td colspan="2">Código QR validado</td>
+                                <td><span class="status-badge disponible">✓ Válida</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-row" style="margin-top: 20px;">
+                    <label>Observaciones:</label>
+                    <textarea rows="3" class="filled" readonly>Documentos verificados correctamente. Sin inconsistencias. Estado actualizado a "Documentos verificados".</textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(3)">← Anterior</button>
+                <button class="primary" onclick="showScreen(5)">Continuar a Autorización →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 4 de 10</div>
+        </div>
+
+        <!-- Pantalla 5: Autorizar inicio de descarga -->
+        <div class="screen" id="screen5">
+            <div class="screen-title">
+                <span class="icon">🔓</span>
+                5. Autorizar Inicio de Descarga
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Coordinador de Logística</p>
+                <p><strong>Requisito:</strong> RF-36 - Autorizar descarga digitalmente</p>
+                <p><strong>Automatización:</strong> Sistema autoriza digitalmente y genera orden de descarga automática</p>
+                <p><strong>⚠️ COHERENCIA PARCIAL 1:</strong> Esta pantalla debe ser idéntica al formulario del Parcial 1</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Autorizar Descarga" para generar orden automáticamente</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Orden Descarga</div>
+                
+                <div class="form-row">
+                    <label>Id:</label>
+                    <input type="text" value="DESC-001" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Fecha:</label>
+                    <input type="text" value="2025-11-22" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Estado:</label>
+                    <input type="text" value="Autorizada" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Horario:</label>
+                    <input type="text" value="14:30 - 15:30" class="filled" readonly>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Supervisor Patio</div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" value="9876543210" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" value="Pedro Ramírez" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" value="3001234567" class="filled" readonly>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Condiciones de Descarga</div>
+                
+                <div class="form-row">
+                    <label>Área de Descarga:</label>
+                    <input type="text" value="Patio A - Zona 3" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Estado del Área:</label>
+                    <input type="text" value="✓ Despejada y Segura" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Condiciones de Seguridad:</label>
+                    <textarea rows="2" class="filled" readonly>Personal capacitado presente. Señalización adecuada. Equipos de seguridad verificados.</textarea>
+                </div>
+
+                <div class="form-row">
+                    <label>Hora de Autorización:</label>
+                    <input type="text" value="14:28:15" class="filled" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(4)">← Anterior</button>
+                <button class="primary" onclick="autorizarDescarga()">🔓 Autorizar Descarga →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 5 de 10</div>
+        </div>
+
+        <!-- Pantalla 6: Supervisar la descarga del producto -->
+        <div class="screen" id="screen6">
+            <div class="screen-title">
+                <span class="icon">📦</span>
+                6. Supervisar la Descarga del Producto
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Supervisor de Patio</p>
+                <p><strong>Requisito:</strong> RF-46 - Confirmar cantidad descargada</p>
+                <p><strong>Automatización:</strong> Sistema registra cantidades automáticamente desde báscula y muestra progreso en tiempo real</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Iniciar Supervisión" para monitorear descarga en tiempo real</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Monitor de Descarga en Tiempo Real</div>
+                
+                <div class="form-row">
+                    <label>Estado del Proceso:</label>
+                    <input type="text" class="filled" value="🟢 En Proceso" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Hora de Inicio:</label>
+                    <input type="text" class="filled" value="14:32:00" readonly>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-descarga" style="width: 0%">0%</div>
+                </div>
+
+                <div class="form-row">
+                    <label>Cantidad Total:</label>
+                    <input type="text" value="50 unidades" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Cantidad Descargada:</label>
+                    <input type="text" id="cantidad-descargada" class="filled" value="0 unidades" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Personal Autorizado:</label>
+                    <input type="text" class="filled" value="✓ Juan Rojas, María Sánchez" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Incidencias:</label>
+                    <textarea id="incidencias-descarga" rows="3" placeholder="Sin incidencias registradas"></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(5)">← Anterior</button>
+                <button class="primary" onclick="simularDescarga()">▶ Iniciar Supervisión</button>
+                <button class="primary" onclick="showScreen(7)" id="btn-completar" style="display: none;">✓ Descarga Completada →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 6 de 10</div>
+        </div>
+
+        <!-- Pantalla 7: Revisar físicamente el estado del producto -->
+        <div class="screen" id="screen7">
+            <div class="screen-title">
+                <span class="icon">🔍</span>
+                7. Revisar Físicamente el Estado del Producto
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Inspector de Calidad</p>
+                <p><strong>Requisito:</strong> RF-53 - Validar integridad de embalajes</p>
+                <p><strong>Automatización:</strong> Sistema valida embalajes y sellos, genera acta de inspección automática</p>
+                <p><strong>⚠️ COHERENCIA PARCIAL 1:</strong> Esta pantalla debe ser idéntica al formulario del Parcial 1</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Validar Embalajes" para inspección automática</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Acta Inspección</div>
+                
+                <div class="form-row">
+                    <label>Id:</label>
+                    <input type="text" value="INSP-001" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Fecha:</label>
+                    <input type="text" value="2025-11-22" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Estado:</label>
+                    <input type="text" value="Aprobado" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Resultado:</label>
+                    <input type="text" value="Conforme" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Lugar:</label>
+                    <input type="text" value="Zona de Inspección - Patio A" class="filled" readonly>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Inspector</div>
+                
+                <div class="form-row">
+                    <label>Cédula:</label>
+                    <input type="text" value="1122334455" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Nombre:</label>
+                    <input type="text" value="Laura Méndez" class="filled" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" value="3009876543" class="filled" readonly>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Detalles de Inspección</div>
+                
+                <div class="form-row">
+                    <label>Cantidad Física:</label>
+                    <input type="text" value="50 unidades" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Cantidad Registrada:</label>
+                    <input type="text" value="50 unidades" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Coincidencia:</label>
+                    <input type="text" value="✓ Coincide 100%" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Estado Embalajes:</label>
+                    <input type="text" value="✓ Intactos" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Sellos de Seguridad:</label>
+                    <input type="text" value="✓ Intactos y Válidos" class="filled" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Observaciones:</label>
+                    <textarea rows="3" class="filled" readonly>Producto recibido en perfectas condiciones. Embalajes sin daños. Sellos de seguridad intactos. Se adjuntan fotografías de evidencia. Inspección aprobada.</textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(6)">← Anterior</button>
+                <button class="primary" onclick="validarEmbalajes()">🔍 Validar Embalajes →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 7 de 10</div>
+        </div>
+
+        <!-- Pantalla 8: Firmar comprobante de recibido -->
+        <div class="screen" id="screen8">
+            <div class="screen-title">
+                <span class="icon">✍️</span>
+                8. Firmar Comprobante de Recibido
+                <span class="badge mobile">MÓVIL</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Cliente Receptor</p>
+                <p><strong>Requisito:</strong> RF-59 - Capturar firma electrónica</p>
+                <p><strong>Automatización:</strong> Sistema captura firma electrónica en pantalla táctil</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Dibuja tu firma en el área táctil o haz clic en "Firmar Automáticamente"</p>
+            </div>
+
+            <div class="mobile-frame">
+                <div class="mobile-screen">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">📱 Comprobante de Recibido</h3>
+                    
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Orden:</strong> #001</p>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Cliente:</strong> María Gómez</p>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Producto:</strong> Cajas Tipo A</p>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Cantidad:</strong> 50 unidades</p>
+                        <p style="margin: 5px 0; font-size: 14px;"><strong>Fecha:</strong> 2025-11-22 15:10</p>
+                    </div>
+
+                    <p style="font-weight: 600; margin-bottom: 10px; color: #333;">Firma del Cliente Receptor:</p>
+                    
+                    <div class="signature-pad" id="signature-pad">
+                        <canvas id="signature-canvas"></canvas>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <button class="secondary" onclick="limpiarFirma()" style="width: 48%; margin-right: 4%;">🗑️ Limpiar</button>
+                        <button class="primary" onclick="autoFirmar()" style="width: 48%;">✍️ Firmar Auto</button>
+                    </div>
+
+                    <button class="primary" onclick="confirmarFirma()" style="width: 100%; margin-top: 15px;" id="btn-confirmar-firma">✓ Confirmar Firma</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(7)">← Anterior</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 8 de 10</div>
+        </div>
+
+        <!-- Pantalla 9: Conservar copia del comprobante firmado -->
+        <div class="screen" id="screen9">
+            <div class="screen-title">
+                <span class="icon">💾</span>
+                9. Conservar Copia del Comprobante Firmado
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Auxiliar Administrativo</p>
+                <p><strong>Requisito:</strong> RF-68 - Asociar comprobante con orden</p>
+                <p><strong>Automatización:</strong> Sistema asocia automáticamente comprobante con orden y genera respaldo en nube</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Al hacer clic en "Archivar", el sistema asocia y guarda automáticamente</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Comprobante de Recibido Firmado</div>
+                
+                <div class="form-row">
+                    <label>ID Comprobante:</label>
+                    <input type="text" class="filled" value="COMP-2025-001234" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Orden Asociada:</label>
+                    <input type="text" class="filled" value="Orden #001 - María Gómez" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Fecha de Firma:</label>
+                    <input type="text" class="filled" value="2025-11-22 15:12:30" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Firmado Por:</label>
+                    <input type="text" class="filled" value="María Gómez (Cliente Receptor)" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Estado Actual:</label>
+                    <input type="text" value="Pendiente de Archivo" readonly>
+                </div>
+            </div>
+
+            <div class="section-card" id="archivo-result" style="display: none;">
+                <div class="section-title">✓ Comprobante Archivado Exitosamente</div>
+                
+                <div class="form-row">
+                    <label>Código de Archivo:</label>
+                    <input type="text" class="filled" value="ARCH-2025-11-001234" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Ubicación:</label>
+                    <input type="text" class="filled" value="/Entregas/2025/Noviembre/001234.pdf" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Respaldo en Nube:</label>
+                    <input type="text" class="filled" value="✓ Generado y Sincronizado" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Enviado a Auditoría:</label>
+                    <input type="text" class="filled" value="✓ Enviado a auditoria@empresa.com" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Estado del Proceso:</label>
+                    <input type="text" class="filled" value="✓ CERRADO" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(8)">← Anterior</button>
+                <button class="primary" onclick="archivarComprobante()">💾 Archivar Comprobante →</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 9 de 10</div>
+        </div>
+
+        <!-- Pantalla 10: Notificar recibido al cliente -->
+        <div class="screen" id="screen10">
+            <div class="screen-title">
+                <span class="icon">📧</span>
+                10. Notificar Recibido al Cliente
+                <span class="badge web">WEB</span>
+            </div>
+            
+            <div class="screen-info">
+                <p><strong>Rol:</strong> Coordinador de Logística</p>
+                <p><strong>Requisito:</strong> RF-76 - Enviar notificación al cliente</p>
+                <p><strong>Automatización:</strong> Sistema envía notificación automática por email/SMS con comprobante adjunto</p>
+            </div>
+
+            <div class="automation-box">
+                <p>⚡ PUNTO DE AUTOMATIZACIÓN: Haz clic en "Enviar Notificación" para envío automático multicanal</p>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Datos de la Entrega</div>
+                
+                <div class="form-row">
+                    <label>Orden:</label>
+                    <input type="text" class="filled" value="Orden #001" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Cliente:</label>
+                    <input type="text" class="filled" value="María Gómez" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Email:</label>
+                    <input type="text" class="filled" value="maria.gomez@email.com" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Teléfono:</label>
+                    <input type="text" class="filled" value="+57 300 123 4567" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Canales de Notificación:</label>
+                    <div style="padding: 10px;">
+                        <label style="margin-right: 20px; font-weight: normal;">
+                            <input type="checkbox" checked disabled> Email
+                        </label>
+                        <label style="margin-right: 20px; font-weight: normal;">
+                            <input type="checkbox" checked disabled> SMS
+                        </label>
+                        <label style="font-weight: normal;">
+                            <input type="checkbox" checked disabled> WhatsApp
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notification-preview">
+                <h4>Vista Previa del Mensaje</h4>
+                <p><strong>Asunto:</strong> ✓ Entrega Completada - Orden #001</p>
+                <p style="margin-top: 15px; line-height: 1.6;">
+                    Estimada María Gómez,<br><br>
+                    Nos complace informarle que su orden #001 ha sido entregada exitosamente.<br><br>
+                    <strong>Detalles de la entrega:</strong><br>
+                    • Producto: Cajas Tipo A<br>
+                    • Cantidad: 50 unidades<br>
+                    • Fecha de entrega: 2025-11-22 15:12<br>
+                    • Estado: Conforme y aprobado<br><br>
+                    Se adjunta el comprobante de recibido firmado para sus registros.<br><br>
+                    Gracias por su confianza.
+                </p>
+
+                <div class="attachment-box">
+                    <span class="icon">📎</span>
+                    <div>
+                        <strong>Comprobante-001234.pdf</strong>
+                        <p style="font-size: 12px; color: #666; margin-top: 3px;">147 KB - Firmado digitalmente</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card" id="notificacion-result" style="display: none;">
+                <div class="section-title">✓ Notificación Enviada Exitosamente</div>
+                
+                <div class="form-row">
+                    <label>Fecha y Hora de Envío:</label>
+                    <input type="text" class="filled" value="2025-11-22 15:15:42" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Email:</label>
+                    <input type="text" class="filled" value="✓ Entregado" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>SMS:</label>
+                    <input type="text" class="filled" value="✓ Entregado" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>WhatsApp:</label>
+                    <input type="text" class="filled" value="✓ Entregado" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Acuse de Recibo:</label>
+                    <input type="text" class="filled" value="✓ Confirmado por el cliente" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label>Estado Final del Proceso:</label>
+                    <input type="text" class="filled" value="🎉 ENTREGA CONFIRMADA" readonly>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="showScreen(9)">← Anterior</button>
+                <button class="primary" onclick="enviarNotificacion()">📧 Enviar Notificación</button>
+                <button class="primary" onclick="finalizarProceso()" id="btn-finalizar" style="display: none;">🎉 Finalizar Proceso</button>
+            </div>
+
+            <div class="nav-indicator">Pantalla 10 de 10 - FINAL</div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentScreen = 1;
+        let signaturePad = null;
+        let canvas = null;
+        let ctx = null;
+        let isDrawing = false;
+
+        // Función para mostrar pantalla
+        function showScreen(screenNumber) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen' + screenNumber).classList.add('active');
+            currentScreen = screenNumber;
+            
+            // Inicializar canvas de firma si estamos en pantalla 8
+            if (screenNumber === 8) {
+                setTimeout(initSignaturePad, 100);
+            }
+        }
+
+        // Pantalla 1: Auto-llenar formulario
+        function autoFillForm1() {
+            document.getElementById('orden_id').value = 'ORD-001';
+            document.getElementById('orden_fecha').value = '2025-11-22';
+            document.getElementById('orden_estado').value = 'Pendiente';
+            document.getElementById('orden_tipo').value = 'Entrega Programada';
+            document.getElementById('orden_direccion').value = 'Calle 45 #23-15, Bogotá';
+            
+            document.getElementById('cliente_nombre').value = 'María Gómez';
+            document.getElementById('cliente_cedula').value = '1234567890';
+            document.getElementById('cliente_telefono').value = '3001234567';
+            document.getElementById('cliente_direccion').value = 'Calle 45 #23-15, Bogotá';
+            
+            document.getElementById('transp_nombre').value = 'Carlos Martínez';
+            document.getElementById('transp_cedula').value = '9876543210';
+            document.getElementById('transp_telefono').value = '3109876543';
+            
+            document.getElementById('coord_nombre').value = 'Ana Torres';
+            document.getElementById('coord_cedula').value = '5555555555';
+            document.getElementById('coord_telefono').value = '3155555555';
+            
+            // Agregar clase filled
+            document.querySelectorAll('#screen1 input').forEach(input => {
+                if (input.value) input.classList.add('filled');
+            });
+        }
+
+        function clearForm1() {
+            document.querySelectorAll('#screen1 input').forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+        }
+
+        // Pantalla 2: Verificar disponibilidad
+        function verificarDisponibilidad(ordenNum) {
+            document.getElementById('disponibilidad-result').style.display = 'block';
+        }
+
+        // Pantalla 3: Escanear ID
+        function escanearID() {
+            document.getElementById('transportador-data').style.display = 'block';
+        }
+
+        // Pantalla 4: Escanear documentos
+        function escanearDocumentos() {
+            document.getElementById('documentos-verificados').style.display = 'block';
+        }
+
+        // Pantalla 5: Autorizar descarga
+        function autorizarDescarga() {
+            alert('✓ Descarga autorizada digitalmente.\nOrden de descarga generada: DESC-001\nNotificación enviada al supervisor de patio.');
+            showScreen(6);
+        }
+
+        // Pantalla 6: Simular descarga
+        function simularDescarga() {
+            let progreso = 0;
+            const intervalo = setInterval(() => {
+                progreso += 10;
+                document.getElementById('progress-descarga').style.width = progreso + '%';
+                document.getElementById('progress-descarga').textContent = progreso + '%';
+                document.getElementById('cantidad-descargada').value = (progreso / 2) + ' unidades';
+                
+                if (progreso >= 100) {
+                    clearInterval(intervalo);
+                    document.getElementById('incidencias-descarga').value = 'Descarga completada sin incidencias. Todas las unidades recibidas en buen estado.';
+                    document.getElementById('btn-completar').style.display = 'inline-block';
+                }
+            }, 500);
+        }
+
+        // Pantalla 7: Validar embalajes
+        function validarEmbalajes() {
+            alert('✓ Embalajes validados correctamente.\nActa de inspección generada: INSP-001\nEstado: Aprobado - Conforme');
+            showScreen(8);
+        }
+
+        // Pantalla 8: Inicializar firma
+        function initSignaturePad() {
+            canvas = document.getElementById('signature-canvas');
+            if (!canvas) return;
+            
+            const pad = document.getElementById('signature-pad');
+            canvas.width = pad.offsetWidth;
+            canvas.height = pad.offsetHeight;
+            ctx = canvas.getContext('2d');
+            
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            
+            // Touch events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function limpiarFirma() {
+            if (ctx && canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function autoFirmar() {
+            if (!ctx || !canvas) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '30px cursive';
+            ctx.fillStyle = '#000';
+            ctx.fillText('María Gómez', 50, 100);
+        }
+
+        function confirmarFirma() {
+            alert('✓ Firma electrónica capturada exitosamente.\nComprobante generado y firmado.\nHora: 15:12:30');
+            showScreen(9);
+        }
+
+        // Pantalla 9: Archivar comprobante y continuar
+        function archivarComprobante() {
+            // Mostrar resultado
+            document.getElementById('archivo-result').style.display = 'block';
+            
+            // Mostrar alerta
+            alert('✓ Comprobante archivado exitosamente.\nCódigo: ARCH-2025-11-001234\nRespaldo generado en nube institucional.\nCopia enviada a auditoría.');
+            
+            // Ir directamente a pantalla 10
+            showScreen(10);
+        }
+        
+        function archivarYContinuar() {
+            archivarComprobante();
+        }
+
+        // Pantalla 10: Enviar notificación
+        function enviarNotificacion() {
+            document.getElementById('notificacion-result').style.display = 'block';
+            document.getElementById('btn-finalizar').style.display = 'inline-block';
+            alert('✓ Notificación enviada exitosamente por todos los canales.\nEmail: Entregado\nSMS: Entregado\nWhatsApp: Entregado');
+        }
+
+        function finalizarProceso() {
+            alert('🎉 ¡PROCESO COMPLETADO EXITOSAMENTE!\n\nOrden #001 - Entrega Confirmada\nTodas las actividades han sido completadas.\nReporte final generado.\n\nGracias por usar el sistema.');
+            if (confirm('¿Deseas volver al inicio para procesar una nueva orden?')) {
+                location.reload();
+            }
+        }
+
+        // Inicializar
+        window.onload = function() {
+            showScreen(1);
+        };
+    </script>
+</body>
+</html>
